@@ -1,0 +1,43 @@
+const int sensorPin = 2;
+const int ledPin = 13;
+
+unsigned long lastTime = 0;
+bool ledOn = false;
+bool hasBlinked = false;
+
+void setup() {
+  pinMode(sensorPin, INPUT);
+  pinMode(ledPin, OUTPUT);
+  digitalWrite(ledPin, LOW);
+  lastTime = millis();
+}
+
+void loop() {
+  int val = digitalRead(sensorPin);
+  unsigned long now = millis();
+
+  if (val == HIGH) {
+    // إذا في حركة
+    digitalWrite(ledPin, HIGH);
+    ledOn = true;
+    lastTime = now;
+    hasBlinked = false; // إعادة السماح بالوميض بعد كل تفاعل
+  } else {
+    // إذا ما في حركة
+    if (ledOn) {
+      digitalWrite(ledPin, LOW);
+      ledOn = false;
+    }
+
+    // إذا مرت 5 ثواني بدون حركة ولم يسبق الوميض
+    if (!hasBlinked && (now - lastTime >= 5000)) {
+      for (int i = 0; i < 5; i++) {
+        digitalWrite(ledPin, HIGH);
+        delay(300); // وميض سريع وقوي
+        digitalWrite(ledPin, LOW);
+        delay(500);
+      }
+      hasBlinked = true;
+    }
+  }
+}
